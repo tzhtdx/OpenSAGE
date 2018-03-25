@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Eto.Forms;
@@ -44,6 +45,7 @@ namespace OpenSage.DataViewer.UI.Viewers.Ini
                         new ArcballCameraController(Vector3.Zero, 200),
                         null,
                         null,
+                        new List<Terrain.Road>(),
                         null,
                         gameObjects,
                         new WaypointCollection(),

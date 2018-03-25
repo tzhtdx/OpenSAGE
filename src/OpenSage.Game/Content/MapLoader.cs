@@ -39,6 +39,7 @@ namespace OpenSage.Content
 
                 default:
                     contentManager.IniDataContext.LoadIniFile(@"Data\INI\Terrain.ini");
+                    contentManager.IniDataContext.LoadIniFile(@"Data\INI\Roads.ini");
                     break;
             }
 
@@ -108,7 +109,8 @@ namespace OpenSage.Content
                 heightMap,
                 mapFile.ObjectsList.Objects,
                 out var waypoints,
-                out var gameObjects);
+                out var gameObjects,
+                out var roads);
 
             foreach (var team in mapFile.SidesList.Teams ?? mapFile.Teams.Items)
             {
@@ -151,6 +153,7 @@ namespace OpenSage.Content
                 cameraController,
                 mapFile,
                 terrain,
+                roads,
                 mapScripts,
                 gameObjects,
                 waypoints,
@@ -237,23 +240,26 @@ namespace OpenSage.Content
             return new Waypoint(waypointID, waypointName, mapObject.Position, pathLabels);
         }
 
-        private static void LoadObjects(
+        private void LoadObjects(
             ContentManager contentManager,
             HeightMap heightMap,
             MapObject[] mapObjects,
             out WaypointCollection waypointCollection,
-            out GameObjectCollection gameObjects)
+            out GameObjectCollection gameObjects,
+            out List<Road> roads)
         {
             var waypoints = new List<Waypoint>();
             gameObjects = new GameObjectCollection(contentManager);
+            roads = new List<Road>();
 
-            foreach (var mapObject in mapObjects)
+            for (var i = 0; i < mapObjects.Length; i++)
             {
+                var mapObject = mapObjects[i];
+                var position = mapObject.Position;
+
                 switch (mapObject.RoadType)
                 {
                     case RoadType.None:
-                        var position = mapObject.Position;
-
                         switch (mapObject.TypeName)
                         {
                             case "*Waypoints/Waypoint":
@@ -279,7 +285,17 @@ namespace OpenSage.Content
                         break;
 
                     default:
-                        // TODO: Roads.
+                        var roadEnd = mapObjects[++i];
+                        var roadEndPosition = roadEnd.Position;
+
+                        var roadTemplate = contentManager.IniDataContext.RoadTemplates.Find(x => x.Name == mapObject.TypeName);
+
+                        roads.Add(AddDisposable(new Road(
+                            contentManager.GraphicsDevice,
+                            roadTemplate,
+                            position,
+                            roadEndPosition)));
+
                         break;
                 }
 
