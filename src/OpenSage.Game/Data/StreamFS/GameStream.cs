@@ -120,15 +120,14 @@ namespace OpenSage.Data.StreamFS
             // List of indices in InstanceData at which to set pointers to the corresponding
             // assets in AssetReferences.
             var importData = readRelocationOrImportData(impReader, asset.Header.ImportsDataSize);
-            if (importData.Length > asset.AssetReferences.Length)
+            if (importData.Length > asset.AssetReferences.Count)
             {
                 throw new InvalidDataException();
             }
             imports = new AssetImport[importData.Length];
             for (var i = 0; i < importData.Length; i++)
             {
-                ref var assetReference = ref asset.AssetReferences[i];
-                var referencedAsset = FindAsset(assetReference);
+                var referencedAsset = FindAsset(asset.AssetReferences[i]);
 
                 imports[i] = new AssetImport(importData[i], referencedAsset);
             }
