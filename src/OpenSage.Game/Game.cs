@@ -13,6 +13,7 @@ using OpenSage.Logic;
 using OpenSage.Network;
 using OpenSage.Scripting;
 using Veldrid;
+using Veldrid.StartupUtilities;
 
 using Player = OpenSage.Logic.Player;
 
@@ -157,11 +158,9 @@ namespace OpenSage
             const bool debug = false;
 #endif
 
-            GraphicsDevice = AddDisposable(GraphicsDevice.CreateD3D11(
-                new GraphicsDeviceOptions(debug, PixelFormat.D32_Float_S8_UInt, true),
-                Window.NativeWindowHandle,
-                (uint) Window.ClientBounds.Width,
-                (uint) Window.ClientBounds.Height));
+            GraphicsDevice = AddDisposable(VeldridStartup.CreateGraphicsDevice(
+                Window.Sdl2Window,
+                new GraphicsDeviceOptions(debug, PixelFormat.D32_Float_S8_UInt, true)));
 
             InputMessageBuffer = AddDisposable(new InputMessageBuffer(Window));
 
